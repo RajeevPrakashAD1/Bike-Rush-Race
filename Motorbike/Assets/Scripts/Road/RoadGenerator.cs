@@ -6,6 +6,7 @@ public class RoadGenerator : MonoBehaviour
     [SerializeField] private Transform player;
     [SerializeField] private RoadSegment[] roadPrefabs;
     [SerializeField] private GameTuning tuning;
+    [SerializeField] private ObstacleSpawner obstacleSpawner;
 
     private readonly Queue<RoadSegment> activeSegments = new Queue<RoadSegment>();
     private float nextSpawnZ;
@@ -51,6 +52,8 @@ public class RoadGenerator : MonoBehaviour
 
         activeSegments.Enqueue(segment);
         nextSpawnZ += tuning.roadSegmentLength;
+        obstacleSpawner.OnRoadSegmentSpawned(segment.transform.position.z);
+
     }
 
     private void RecycleSegment()
@@ -60,5 +63,7 @@ public class RoadGenerator : MonoBehaviour
         activeSegments.Enqueue(segment);
 
         nextSpawnZ += tuning.roadSegmentLength;
+        obstacleSpawner.OnRoadSegmentSpawned(segment.transform.position.z);
+
     }
 }

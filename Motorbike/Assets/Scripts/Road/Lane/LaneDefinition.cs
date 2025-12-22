@@ -13,4 +13,13 @@ public class LaneDefinition : MonoBehaviour
         // laneIndex: 0 = left, 1 = right
         return laneIndex == 0 ? LeftLaneX : RightLaneX;
     }
+    public float GetNearestLaneX(float x)
+    {
+        float left = GetLaneX(0);
+        float right = GetLaneX(1);
+
+        return Mathf.Abs(x - left) < Mathf.Abs(x - right)
+            ? left
+            : right;
+    }
 }

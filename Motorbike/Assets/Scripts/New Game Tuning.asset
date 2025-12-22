@@ -21,3 +21,6 @@ MonoBehaviour:
   maxGameSpeed: 60
   cruiseSpeed: 20
   maxSpeed: 60
+  throttleAcceleration: 20
+  speedReturnRate: 10
+  obstacleSpawnChance: 0.992

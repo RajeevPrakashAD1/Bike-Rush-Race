@@ -937,14 +937,13 @@ GameObject:
   - component: {fileID: 356485453}
   - component: {fileID: 356485455}
   - component: {fileID: 356485454}
-  - component: {fileID: 356485458}
   - component: {fileID: 356485459}
   - component: {fileID: 356485461}
-  - component: {fileID: 356485463}
   - component: {fileID: 356485462}
   - component: {fileID: 356485464}
   - component: {fileID: 356485466}
   - component: {fileID: 356485465}
+  - component: {fileID: 356485467}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1051,38 +1050,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 356485452}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d4e12e8533a0a3d4abdcd0e17bb3f1a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!54 &356485458
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 356485452}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 0
-  m_ImplicitTensor: 0
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!82 &356485459
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1187,13 +1159,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 356485452}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbb353389c31c49d2965afa988ad5087, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputRouter
   input: {fileID: 356485462}
-  laneController: {fileID: 356485463}
+  laneController: {fileID: 0}
   laneChangeThreshold: 0.5
 --- !u!114 &356485462
 MonoBehaviour:
@@ -1210,20 +1182,6 @@ MonoBehaviour:
   SteeringInput: 0
   ThrottleInput: 0
   BrakeInput: 0
---- !u!114 &356485463
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 356485452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c48a2a35846d41b288fcef554712e51, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerLaneController
-  tuning: {fileID: 11400000, guid: 49983212c56b64f69a2f824c3114c3b5, type: 2}
-  speedController: {fileID: 356485464}
 --- !u!114 &356485464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1238,7 +1196,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpeedController
   tuning: {fileID: 11400000, guid: 49983212c56b64f69a2f824c3114c3b5, type: 2}
   input: {fileID: 356485462}
-  currentSpeed: 0
+  currentSpeed: 5
 --- !u!114 &356485465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1251,7 +1209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccbe35dd5ba604776911c815fa25b916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraLeanController
-  laneController: {fileID: 356485463}
+  lateralController: {fileID: 356485467}
   speedController: {fileID: 356485464}
   maxRoll: 8
   maxYaw: 4
@@ -1268,11 +1226,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1df9c4f3fe989499fbca5b7ef5f1e3ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BikeLeanController
-  laneController: {fileID: 356485463}
+  lateralController: {fileID: 356485467}
   speedController: {fileID: 356485464}
+  input: {fileID: 356485462}
   bikeVisual: {fileID: 1688958513}
   maxLeanAngle: 20
   leanSmooth: 8
+--- !u!114 &356485467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 356485452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1d886f34f2e6424ca7749dca7b49363, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLateralController
+  input: {fileID: 356485462}
+  speedController: {fileID: 356485464}
+  lanes: {fileID: 1481628171}
+  inputForce: 25
+  damping: 8
+  lanePullLowSpeed: 30
+  lanePullHighSpeed: 80
+  maxLaneOffset: 5
+  steerDeadZone: 0.1
 --- !u!1 &401612074
 GameObject:
   m_ObjectHideFlags: 0
@@ -1974,27 +1954,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 524933845}
-  - component: {fileID: 524933844}
+  - component: {fileID: 524933846}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: ObstacleSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &524933844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 524933843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c44217f745efa044494230b4609dc50c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectiveModuleQueue: []
 --- !u!4 &524933845
 Transform:
   m_ObjectHideFlags: 0
@@ -2010,6 +1977,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &524933846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 524933843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecb6df47aa1f8462989cc407d4a6de13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
+  tuning: {fileID: 11400000, guid: 49983212c56b64f69a2f824c3114c3b5, type: 2}
+  player: {fileID: 356485453}
+  lanes: {fileID: 1481628171}
+  obstaclePrefabs:
+  - {fileID: -2144442019770262049, guid: 62f20a7916b120e4db20f8207d1cd625, type: 3}
+  spawnAheadSegments: 1
 --- !u!1 &547934198
 GameObject:
   m_ObjectHideFlags: 0
@@ -3914,6 +3899,7 @@ MonoBehaviour:
   - {fileID: -7595874360143588688, guid: 1b218a1a1c91d9b4b9ff14679cd7d369, type: 3}
   - {fileID: -7700949092112839705, guid: 3f52a0140324442e99cfbe21a5bedb68, type: 3}
   tuning: {fileID: 11400000, guid: 49983212c56b64f69a2f824c3114c3b5, type: 2}
+  obstacleSpawner: {fileID: 524933846}
 --- !u!4 &1481628170
 Transform:
   m_ObjectHideFlags: 0

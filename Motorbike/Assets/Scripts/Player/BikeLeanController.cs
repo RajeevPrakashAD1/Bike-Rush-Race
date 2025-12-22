@@ -2,28 +2,38 @@ using UnityEngine;
 
 public class BikeLeanController : MonoBehaviour
 {
-    [SerializeField] private PlayerLaneController laneController;
+    [Header("References")]
+    [SerializeField] private PlayerLateralController lateralController;
     [SerializeField] private PlayerSpeedController speedController;
+    [SerializeField] private GameplayInputHandler input;
 
     [Header("Lean Settings")]
     [SerializeField] private Transform bikeVisual;
-    [SerializeField] private float maxLeanAngle = 20f;
-    [SerializeField] private float leanSmooth = 8f;
+    [SerializeField] private float maxLeanAngle = 25f;
+    [SerializeField] private float leanSmooth = 6f;
 
     private float currentLean;
 
     private void Update()
     {
-        float targetLean = 0f;
+        // Motion-based lean (primary)
+        float velocityLean =
+            -lateralController.LateralVelocity * 0.4f;
 
-        if (laneController.IsSwitching)
-        {
-            int direction = laneController.TargetLane > laneController.CurrentLane ? -1 : 1;
+        // Input-based lean (secondary, adds struggle feel)
+        float inputLean =
+            -input.SteeringInput * 10f;
 
-            float speedFactor = Mathf.Lerp(0.7f, 1.2f, speedController.Speed01);
+        // Speed amplifies instability
+        float speedFactor =
+            Mathf.Lerp(0.8f, 1.3f, speedController.Speed01);
 
-            targetLean = direction * maxLeanAngle * speedFactor;
-        }
+        float targetLean =
+            Mathf.Clamp(
+                (velocityLean + inputLean) * speedFactor,
+                -maxLeanAngle,
+                maxLeanAngle
+            );
 
         currentLean = Mathf.Lerp(
             currentLean,

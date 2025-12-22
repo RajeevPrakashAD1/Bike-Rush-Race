@@ -2,40 +2,43 @@ using UnityEngine;
 
 public class CameraLeanController : MonoBehaviour
 {
-    [SerializeField] private PlayerLaneController laneController;
+    [Header("References")]
+    [SerializeField] private PlayerLateralController lateralController;
     [SerializeField] private PlayerSpeedController speedController;
 
-    [Header("Camera Lean")]
-    [SerializeField] private float maxRoll = 8f;
+    [Header("Camera Motion")]
+    [SerializeField] private float maxRoll = 7f;
     [SerializeField] private float maxYaw = 4f;
-    [SerializeField] private float smooth = 6f;
+    [SerializeField] private float smooth = 5f;
 
-    private float currentRoll;
-    private float currentYaw;
+    private float roll;
+    private float yaw;
 
     private void LateUpdate()
     {
-        float targetRoll = 0f;
-        float targetYaw = 0f;
+        float lateralVel = lateralController.LateralVelocity;
 
-        if (laneController.IsSwitching)
-        {
-            int dir = laneController.TargetLane > laneController.CurrentLane ? -1 : 1;
+        float speedFactor =
+            Mathf.Lerp(0.7f, 1.2f, speedController.Speed01);
 
-            float speedFactor = Mathf.Lerp(0.6f, 1.1f, speedController.Speed01);
+        float targetRoll =
+            Mathf.Clamp(
+                -lateralVel * 0.25f * speedFactor,
+                -maxRoll,
+                maxRoll
+            );
 
-            targetRoll = dir * maxRoll * speedFactor;
-            targetYaw  = dir * maxYaw  * speedFactor;
-        }
+        float targetYaw =
+            Mathf.Clamp(
+                -lateralVel * 0.15f * speedFactor,
+                -maxYaw,
+                maxYaw
+            );
 
-        currentRoll = Mathf.Lerp(currentRoll, targetRoll, smooth * Time.deltaTime);
-        currentYaw  = Mathf.Lerp(currentYaw,  targetYaw,  smooth * Time.deltaTime);
+        roll = Mathf.Lerp(roll, targetRoll, smooth * Time.deltaTime);
+        yaw  = Mathf.Lerp(yaw,  targetYaw,  smooth * Time.deltaTime);
 
-        ApplyCameraLean(currentRoll, currentYaw);
-    }
-
-    private void ApplyCameraLean(float roll, float yaw)
-    {
-        transform.localRotation = Quaternion.Euler(0f, yaw, roll);
+        transform.localRotation =
+            Quaternion.Euler(0f, yaw, roll);
     }
 }
