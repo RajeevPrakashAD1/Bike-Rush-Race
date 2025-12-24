@@ -5,25 +5,28 @@ public class PlayerLateralController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameplayInputHandler input;
     [SerializeField] private PlayerSpeedController speedController;
-    [SerializeField] private LaneDefinition lanes;
 
-    [Header("Input Control")]
-    [SerializeField] private float inputForce = 30f;
-    [SerializeField] private float damping = 10f;
+    [Header("Steering")]
+    [SerializeField] private float baseInputForce = 30f;
+    [SerializeField] private float minSteeringMultiplier = 0.25f; // at max speed
 
-    [Header("Lane Stability")]
-    [Tooltip("How strongly bike recenters when NO input is given")]
-    [SerializeField] private float lanePullLowSpeed = 15f;
-    [SerializeField] private float lanePullHighSpeed = 60f;
+    [Header("Damping / Weight")]
+    [SerializeField] private float dampingLowSpeed = 8f;
+    [SerializeField] private float dampingHighSpeed = 22f;
 
-    [Tooltip("Max sideways distance allowed")]
-    [SerializeField] private float maxLaneOffset = 5f;
+    [Header("Lateral Velocity Limits")]
+    [SerializeField] private float maxLatSpeedLow = 10f;
+    [SerializeField] private float maxLatSpeedHigh = 3.5f;
 
-    [Tooltip("Input threshold to consider player actively steering")]
-    [SerializeField] private float steerDeadZone = 0.1f;
+    [Header("Road Boundaries")]
+    [Tooltip("Half width of safe road area")]
+    [SerializeField] private float safeHalfWidth = 6.5f;
 
-    private float lateralVelocity;
+    [SerializeField] private float wallResistanceLowSpeed = 20f;
+    [SerializeField] private float wallResistanceHighSpeed = 70f;
+
     private float currentX;
+    private float lateralVelocity;
 
     public float LateralVelocity => lateralVelocity;
 
@@ -36,62 +39,77 @@ public class PlayerLateralController : MonoBehaviour
     {
         float dt = Time.deltaTime;
         float speed01 = speedController.Speed01;
-        float steer = input.SteeringInput;
 
         float acceleration = 0f;
 
-        // ============================
-        // 1️⃣ PLAYER CONTROL (PRIMARY)
-        // ============================
-        if (Mathf.Abs(steer) > steerDeadZone)
-        {
-            // Player is actively steering → FULL control
-            acceleration += steer * inputForce;
-        }
-        else
-        {
-            // ============================
-            // 2️⃣ LANE STABILITY (SECONDARY)
-            // ============================
-            float targetLaneX = lanes.GetNearestLaneX(currentX);
+        // ==================================================
+        // 1️⃣ SPEED-BASED STEERING AUTHORITY
+        // ==================================================
+        float steeringMultiplier = Mathf.Lerp(
+            1f,
+            minSteeringMultiplier,
+            speed01
+        );
 
-            float lanePullStrength = Mathf.Lerp(
-                lanePullLowSpeed,
-                lanePullHighSpeed,
+        acceleration += input.SteeringInput * baseInputForce * steeringMultiplier;
+
+        // ==================================================
+        // 2️⃣ WALL RESISTANCE (ONLY WHEN HIT)
+        // ==================================================
+        float absX = Mathf.Abs(currentX);
+        if (absX > safeHalfWidth)
+        {
+            float resistance = Mathf.Lerp(
+                wallResistanceLowSpeed,
+                wallResistanceHighSpeed,
                 speed01
             );
 
-            acceleration += (targetLaneX - currentX) * lanePullStrength;
+            float pushDir = -Mathf.Sign(currentX);
+            acceleration += pushDir * resistance;
+
+            OnWallScrape(absX - safeHalfWidth);
         }
 
-        // ============================
+        // ==================================================
         // 3️⃣ INTEGRATE VELOCITY
-        // ============================
+        // ==================================================
         lateralVelocity += acceleration * dt;
 
-        // ============================
-        // 4️⃣ DAMPING (BIKE WEIGHT)
-        // ============================
+        // ==================================================
+        // 4️⃣ SPEED-BASED LATERAL SPEED LIMIT
+        // ==================================================
+        float maxLatSpeed = Mathf.Lerp(
+            maxLatSpeedLow,
+            maxLatSpeedHigh,
+            speed01
+        );
+
+        lateralVelocity = Mathf.Clamp(
+            lateralVelocity,
+            -maxLatSpeed,
+            maxLatSpeed
+        );
+
+        // ==================================================
+        // 5️⃣ SPEED-BASED DAMPING (WEIGHT)
+        // ==================================================
+        float damping = Mathf.Lerp(
+            dampingLowSpeed,
+            dampingHighSpeed,
+            speed01
+        );
+
         lateralVelocity = Mathf.Lerp(
             lateralVelocity,
             0f,
             damping * dt
         );
 
-        // ============================
-        // 5️⃣ INTEGRATE POSITION
-        // ============================
+        // ==================================================
+        // 6️⃣ INTEGRATE POSITION
+        // ==================================================
         currentX += lateralVelocity * dt;
-
-        // ============================
-        // 6️⃣ SAFETY CLAMP
-        // ============================
-        currentX = Mathf.Clamp(
-            currentX,
-            -maxLaneOffset,
-            maxLaneOffset
-        );
-
         ApplyPosition();
     }
 
@@ -100,5 +118,16 @@ public class PlayerLateralController : MonoBehaviour
         Vector3 pos = transform.position;
         pos.x = currentX;
         transform.position = pos;
+    }
+
+    private void OnWallScrape(float penetrationDepth)
+    {
+        // Later hook:
+        // - Camera shake
+        // - Sparks
+        // - Speed loss
+        // - Damage
+
+        Debug.Log($"Wall scrape depth: {penetrationDepth:F2}");
     }
 }

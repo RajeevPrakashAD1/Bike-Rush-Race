@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class ObstacleDefinition : MonoBehaviour
 {
-    [Tooltip("Which lane this obstacle occupies (0 = Left, 1 = Right)")]
-    public int laneIndex;
+    [Header("Placement")]
+    public float width = 1.5f;
+    public float localZOffset = 0f;
 
-    [Tooltip("Z offset inside the road segment")]
-    public float localZOffset;
+    [Tooltip("Can this obstacle occupy the center of the road?")]
+    public bool allowCenter = true;
 }

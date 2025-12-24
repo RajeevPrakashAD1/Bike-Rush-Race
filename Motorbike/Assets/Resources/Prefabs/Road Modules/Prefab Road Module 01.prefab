@@ -669,6 +669,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Prefab Road Light 01
       objectReference: {fileID: 0}
+    - target: {fileID: 6510190288774254032, guid: 3ed540eca0eba804c9b072643a031513, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1027,6 +1031,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Prefab Road Light 01 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6510190288774254032, guid: 3ed540eca0eba804c9b072643a031513, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1309,6 +1317,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8666040382175572991, guid: 62f20a7916b120e4db20f8207d1cd625, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8921814569845460044, guid: 62f20a7916b120e4db20f8207d1cd625, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -1961,6 +1973,18 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 4210f9057552e0c4f9be82be8c13f246, type: 3}
       propertyPath: m_Name
       value: RoadModule_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 4210f9057552e0c4f9be82be8c13f246, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5148817236446094103, guid: 4210f9057552e0c4f9be82be8c13f246, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6507901977716847365, guid: 4210f9057552e0c4f9be82be8c13f246, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7339356831882890532, guid: 4210f9057552e0c4f9be82be8c13f246, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

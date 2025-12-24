@@ -9,6 +9,7 @@ public class PlayerSpeedController : MonoBehaviour
     [SerializeField] private float currentSpeed;
 
     public float CurrentSpeed => currentSpeed;
+ 
 
     private void Start()
     {

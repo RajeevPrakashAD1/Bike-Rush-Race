@@ -6,7 +6,9 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameTuning tuning;
     [SerializeField] private Transform player;
-    [SerializeField] private LaneDefinition lanes;
+
+    [Header("Road")]
+    [SerializeField] private float roadHalfWidth = 6.5f;
 
     [Header("Obstacle Setup")]
     [SerializeField] private ObstacleDefinition[] obstaclePrefabs;
@@ -15,7 +17,6 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] private int spawnAheadSegments = 6;
 
     private float nextSpawnZ;
-
     private readonly List<GameObject> activeObstacles = new List<GameObject>();
 
     private void Start()
@@ -25,7 +26,6 @@ public class ObstacleSpawner : MonoBehaviour
 
     public void OnRoadSegmentSpawned(float segmentStartZ)
     {
-        // Random chance per segment
         if (Random.value > tuning.obstacleSpawnChance)
             return;
 
@@ -37,12 +37,42 @@ public class ObstacleSpawner : MonoBehaviour
         ObstacleDefinition prefab =
             obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
 
-        float laneX = lanes.GetLaneX(Random.Range(0,2));
-        float z = segmentStartZ + prefab.localZOffset;
+        float halfObstacleWidth = prefab.width * 0.5f;
 
-        Vector3 pos = new Vector3(laneX, 0f, z);
+        float minX = -roadHalfWidth + halfObstacleWidth;
+        float maxX =  roadHalfWidth - halfObstacleWidth;
+
+        float x;
+
+        if (prefab.allowCenter)
+        {
+            // Full road allowed
+            x = Random.Range(minX, maxX);
+        }
+        else
+        {
+            // Exclude center zone
+            float centerExclusionHalf = 0.75f; // tweakable
+
+            float leftMin = minX;
+            float leftMax = -centerExclusionHalf - halfObstacleWidth;
+
+            float rightMin = centerExclusionHalf + halfObstacleWidth;
+            float rightMax = maxX;
+
+            bool spawnLeft = Random.value < 0.5f;
+
+            if (spawnLeft && leftMax > leftMin)
+                x = Random.Range(leftMin, leftMax);
+            else
+                x = Random.Range(rightMin, rightMax);
+        }
+
+        float z = segmentStartZ + prefab.localZOffset;
+        Vector3 pos = new Vector3(x, 0f, z);
 
         GameObject obj = Instantiate(prefab.gameObject, pos, Quaternion.identity);
         activeObstacles.Add(obj);
     }
+
 }
