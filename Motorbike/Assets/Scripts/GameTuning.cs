@@ -43,7 +43,7 @@ public class GameTuning : ScriptableObject
     public float throttleAcceleration = 20f;
 
     [Tooltip("How fast speed falls back to cruise when throttle released")]
-    public float speedReturnRate = 10f;
+    public float speedReturnRate = 30f;
 
     //obstacle
     [Header("Obstacles")]

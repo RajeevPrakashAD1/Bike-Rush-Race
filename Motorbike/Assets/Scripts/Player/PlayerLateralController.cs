@@ -5,14 +5,16 @@ public class PlayerLateralController : MonoBehaviour
     [Header("References")]
     [SerializeField] private GameplayInputHandler input;
     [SerializeField] private PlayerSpeedController speedController;
+    [SerializeField] private PlayerWobbleController wobble;
+
 
     [Header("Steering")]
     [SerializeField] private float baseInputForce = 30f;
-    [SerializeField] private float minSteeringMultiplier = 0.25f; // at max speed
+    [SerializeField] private float minSteeringMultiplier = 0.3f; // at max speed
 
     [Header("Damping / Weight")]
     [SerializeField] private float dampingLowSpeed = 8f;
-    [SerializeField] private float dampingHighSpeed = 22f;
+    [SerializeField] private float dampingHighSpeed = 20f;
 
     [Header("Lateral Velocity Limits")]
     [SerializeField] private float maxLatSpeedLow = 10f;
@@ -23,7 +25,8 @@ public class PlayerLateralController : MonoBehaviour
     [SerializeField] private float safeHalfWidth = 6.5f;
 
     [SerializeField] private float wallResistanceLowSpeed = 20f;
-    [SerializeField] private float wallResistanceHighSpeed = 70f;
+    [SerializeField] private float wallResistanceHighSpeed = 170f;
+    private bool crashed;
 
     private float currentX;
     private float lateralVelocity;
@@ -37,6 +40,7 @@ public class PlayerLateralController : MonoBehaviour
 
     private void Update()
     {
+        if (crashed) return;
         float dt = Time.deltaTime;
         float speed01 = speedController.Speed01;
 
@@ -70,6 +74,11 @@ public class PlayerLateralController : MonoBehaviour
 
             OnWallScrape(absX - safeHalfWidth);
         }
+        
+        //wobble force
+         //After steering & wall resistance
+        acceleration += wobble.GetWobbleForce(dt);
+
 
         // ==================================================
         // 3️⃣ INTEGRATE VELOCITY
@@ -119,6 +128,18 @@ public class PlayerLateralController : MonoBehaviour
         pos.x = currentX;
         transform.position = pos;
     }
+    public void AddLateralImpulse(float impulse)
+    {
+        Debug.Log("adding literal impulse");
+        lateralVelocity += impulse;
+    }
+
+    public void ForceCrash()
+    {
+        crashed = true;
+        //OnCrash();
+    }
+
 
     private void OnWallScrape(float penetrationDepth)
     {
@@ -128,6 +149,6 @@ public class PlayerLateralController : MonoBehaviour
         // - Speed loss
         // - Damage
 
-        Debug.Log($"Wall scrape depth: {penetrationDepth:F2}");
+        //Debug.Log($"Wall scrape depth: {penetrationDepth:F2}");
     }
 }

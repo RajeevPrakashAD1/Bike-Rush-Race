@@ -12,21 +12,26 @@ public class PlayerHeadlightController : MonoBehaviour
     [SerializeField] private AnimationCurve rangeBySpeed;
 
     [Header("Intensity (Gameplay, not realistic)")]
-    [SerializeField] private float minIntensity = 10f;
+    [SerializeField] private float minIntensity = 800f;
     [SerializeField] private float maxIntensity = 1150f;
     [SerializeField] private AnimationCurve intensityBySpeed;
 
-    [Header("Spot Angles")]
-    [Tooltip("Defines suspicion width (rarely changes)")]
-    [SerializeField] private float outerSpotAngle = 38f;
+
 
     [Tooltip("Defines certainty cone at low speed")]
-    [SerializeField] private float minInnerSpotAngle = 10f;
+    [SerializeField] private float minInnerSpotAngle = 43;
 
     [Tooltip("Defines certainty cone at high speed")]
-    [SerializeField] private float maxInnerSpotAngle = 18f;
+    [SerializeField] private float maxInnerSpotAngle = 101f;
 
+    [Tooltip("Defines certainty cone at low speed")]
+    [SerializeField] private float minOuterSpotAngle = 54;
+
+    [Tooltip("Defines certainty cone at high speed")]
+    [SerializeField] private float maxOuterSpotAngle = 102;
+    
     [SerializeField] private AnimationCurve innerAngleBySpeed;
+    [SerializeField] private AnimationCurve outerAngleBySpeed;
 
     private Light headlight;
 
@@ -37,7 +42,7 @@ public class PlayerHeadlightController : MonoBehaviour
         headlight.shadows = LightShadows.None;
 
         // Outer angle is mostly fixed
-        headlight.spotAngle = outerSpotAngle;
+        //headlight.spotAngle = outerSpotAngle;
     }
 
     private void Update()
@@ -46,18 +51,19 @@ public class PlayerHeadlightController : MonoBehaviour
 
         // -------- RANGE --------
         float rangeT = rangeBySpeed.Evaluate(speed01);
+        rangeT = Mathf.Pow(rangeT, 0.6f);
         headlight.range = Mathf.Lerp(minRange, maxRange, rangeT);
 
         // -------- INTENSITY --------
         float intensityT = intensityBySpeed.Evaluate(speed01);
+        intensityT = Mathf.Pow(intensityT, 0.6f);
         headlight.intensity = Mathf.Lerp(minIntensity, maxIntensity, intensityT);
 
-        // -------- INNER SPOT ANGLE (CERTAINTY) --------
-        float innerT = innerAngleBySpeed.Evaluate(speed01);
-        headlight.innerSpotAngle = Mathf.Lerp(
-            minInnerSpotAngle,
-            maxInnerSpotAngle,
-            innerT
-        );
+        // Angles (safe)
+        float inner = Mathf.Lerp(minInnerSpotAngle, maxInnerSpotAngle, innerAngleBySpeed.Evaluate(speed01));
+        float outer = Mathf.Lerp(minOuterSpotAngle, maxOuterSpotAngle, outerAngleBySpeed.Evaluate(speed01));
+
+        headlight.spotAngle = outer;
+        headlight.innerSpotAngle = Mathf.Min(inner, outer);
     }
 }

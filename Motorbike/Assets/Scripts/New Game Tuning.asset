@@ -20,7 +20,7 @@ MonoBehaviour:
   laneChangeSpeedHigh: 2
   maxGameSpeed: 60
   cruiseSpeed: 0
-  maxSpeed: 180
+  maxSpeed: 200
   throttleAcceleration: 20
-  speedReturnRate: 10
+  speedReturnRate: 30
   obstacleSpawnChance: 0.511
